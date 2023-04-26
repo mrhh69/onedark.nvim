@@ -1,25 +1,29 @@
 
 local colors = {
-	red            = { gui = "#E06C75", cterm = "204"},
-	dark_red       = { gui = "#BE5046", cterm = "196"},
-	green          = { gui = "#98C379", cterm = "114"},
-	yellow         = { gui = "#E5C07B", cterm = "180"},
-	dark_yellow    = { gui = "#D19A66", cterm = "173"},
-	blue           = { gui = "#61AFEF", cterm = "39"},
-	purple         = { gui = "#C678DD", cterm = "170"},
-	cyan           = { gui = "#56B6C2", cterm = "38"},
-	white          = { gui = "#ABB2BF", cterm = "145"},
-	black          = { gui = "#282C34", cterm = "235"},
-	foreground     = { gui = "#ABB2BF", cterm = "145"},
-	background     = { gui = "#282C34", cterm = "235"},
-	comment_grey   = { gui = "#5C6370", cterm = "59"},
-	gutter_fg_grey = { gui = "#4B5263", cterm = "238"},
-	cursor_grey    = { gui = "#2C323C", cterm = "236"},
-	visual_grey    = { gui = "#3E4452", cterm = "237"},
-	menu_grey      = { gui = "#3E4452", cterm = "237"},
-	special_grey   = { gui = "#3B4048", cterm = "238"},
-	vertsplit      = { gui = "#3E4452", cterm = "59"},
+	red            = { gui = "#ff5f87"},
+	dark_red       = { gui = "#ff0000"},
+	green          = { gui = "#87d787"},
+	yellow         = { gui = "#d7af87"},
+	dark_yellow    = { gui = "#d7875f"},
+	blue           = { gui = "#00afff"},
+	purple         = { gui = "#d75fd7"},
+	cyan           = { gui = "#00afd7"},
+	white          = { gui = "#afafaf"},
+	black          = { gui = "#262626"},
+	foreground     = { gui = "#afafaf"},
+	background     = { gui = "#262626"},
+	comment_grey   = { gui = "#5f5f5f"},
+	gutter_fg_grey = { gui = "#444444"},
+	cursor_grey    = { gui = "#303030"},
+	visual_grey    = { gui = "#3a3a3a"},
+	menu_grey      = { gui = "#3a3a3a"},
+	special_grey   = { gui = "#444444"},
+	vertsplit      = { gui = "#5f5f5f"},
 }
+
+
+local convert = require('convert')
+
 
 local M = {}
 
@@ -28,12 +32,26 @@ function M.get_colors()
 end
 
 function M.set(group, style)
+	local guifg   = 'none'
+	local ctermfg = 'none'
+	local guibg   = 'none'
+	local ctermbg = 'none'
+
+	if (style.fg ~= nil) then
+		guifg = style.fg.gui
+		ctermfg = convert.gui2cterm(guifg)
+	end
+	if (style.bg ~= nil) then
+		guibg = style.bg.gui
+		ctermbg = convert.gui2cterm(guibg)
+	end
+
 	vim.api.nvim_set_hl(0, group, {
-		fg      = ((style.fg ~= nil) and style.fg.gui or "NONE"),
-		bg      = ((style.bg ~= nil) and style.bg.gui or "NONE"),
-		sp      = ((style.sp ~= nil) and style.sp.gui or "NONE"),
-		ctermfg = ((style.fg ~= nil) and tonumber(style.fg.cterm) or "NONE"),
-		ctermbg = ((style.bg ~= nil) and tonumber(style.bg.cterm) or "NONE"),
+		fg      = guifg,
+		bg      = guibg,
+		sp      = ((style.sp ~= nil) and style.sp.gui or 'none'),
+		ctermfg = ctermfg,
+		ctermbg = ctermbg,
 
 		underline     = style.underline,
 		bold          = style.bold,
@@ -57,6 +75,7 @@ function M.setup()
 	-- set t_Co=256
 
 	vim.g.colors_name = "onedark"
+
 
 	local red = colors.red
 	local dark_red = colors.dark_red
