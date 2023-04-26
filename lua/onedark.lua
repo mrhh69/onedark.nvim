@@ -1,9 +1,46 @@
 
+local colors = {
+	red            = { gui = "#E06C75", cterm = "204"},
+	dark_red       = { gui = "#BE5046", cterm = "196"},
+	green          = { gui = "#98C379", cterm = "114"},
+	yellow         = { gui = "#E5C07B", cterm = "180"},
+	dark_yellow    = { gui = "#D19A66", cterm = "173"},
+	blue           = { gui = "#61AFEF", cterm = "39"},
+	purple         = { gui = "#C678DD", cterm = "170"},
+	cyan           = { gui = "#56B6C2", cterm = "38"},
+	white          = { gui = "#ABB2BF", cterm = "145"},
+	black          = { gui = "#282C34", cterm = "235"},
+	foreground     = { gui = "#ABB2BF", cterm = "145"},
+	background     = { gui = "#282C34", cterm = "235"},
+	comment_grey   = { gui = "#5C6370", cterm = "59"},
+	gutter_fg_grey = { gui = "#4B5263", cterm = "238"},
+	cursor_grey    = { gui = "#2C323C", cterm = "236"},
+	visual_grey    = { gui = "#3E4452", cterm = "237"},
+	menu_grey      = { gui = "#3E4452", cterm = "237"},
+	special_grey   = { gui = "#3B4048", cterm = "238"},
+	vertsplit      = { gui = "#3E4452", cterm = "59"},
+}
+
 local M = {}
 
+function M.get_colors()
+	return colors
+end
 
 function M.set(group, style)
+	vim.api.nvim_set_hl(0, group, {
+		fg      = ((style.fg ~= nil) and style.fg.gui or "NONE"),
+		bg      = ((style.bg ~= nil) and style.bg.gui or "NONE"),
+		sp      = ((style.sp ~= nil) and style.sp.gui or "NONE"),
+		ctermfg = ((style.fg ~= nil) and tonumber(style.fg.cterm) or "NONE"),
+		ctermbg = ((style.bg ~= nil) and tonumber(style.bg.cterm) or "NONE"),
 
+		underline     = style.underline,
+		bold          = style.bold,
+		italic        = style.italic,
+		reverse       = style.reverse,
+		strikethrough = style.strikethrough,
+	})
 end
 
 
@@ -20,12 +57,6 @@ function M.setup()
 	-- set t_Co=256
 
 	vim.g.colors_name = "onedark"
-
-	vim.cmd("source /Users/max/.local/share/nvim/site/pack/packer/start/onedark.vim/colors/onedark.vim")
-
-
-
-	local colors = vim.fn['onedark#GetColors']()
 
 	local red = colors.red
 	local dark_red = colors.dark_red
@@ -49,7 +80,8 @@ function M.setup()
 
 
 	local none = {["nil"] = "nothing"}
-	local h = vim.fn['onedark#set_highlight']
+	-- local h = vim.fn['onedark#set_highlight']
+	local h = M.set
 
 
 	-- terminal colors
@@ -73,7 +105,7 @@ function M.setup()
 	vim.g.terminal_color_foreground = foreground.gui
 
 	-- syntax groups
-	h("Comment", { fg = comment_grey, gui = "italic", cterm = "italic" }) -- any comment
+	h("Comment", { fg = comment_grey, italic = true}) -- any comment
 	h("Constant", { fg = cyan }) -- any constant
 	h("String", { fg = green }) -- a string constant: "this is a string"
 	h("Character", { fg = green }) -- a character constant: 'c', '\n'
@@ -104,7 +136,7 @@ function M.setup()
 	h("Delimiter", none) -- character that needs attention
 	h("SpecialComment", { fg = comment_grey }) -- special things inside a comment
 	h("Debug", none) -- debugging statements
-	h("Underlined", { gui = "underline", cterm = "underline" }) -- text that stands out, HTML links
+	h("Underlined", {underline = true}) -- text that stands out, HTML links
 	h("Ignore", none) -- left blank, hidden
 	h("Error", { fg = red }) -- any erroneous construct
 	h("Todo", { fg = purple }) -- anything that needs extra attention; mostly the keywords TODO FIXME and XXX
@@ -118,7 +150,7 @@ function M.setup()
 	h("CursorColumn", { bg = cursor_grey })
 	h("Directory", { fg = blue })
 	h("DiffAdd", { bg = green, fg = black })
-	h("DiffChange", { fg = yellow, gui = "underline", cterm = "underline" })
+	h("DiffChange", { fg = yellow, underline = true})
 	h("DiffDelete", { bg = red, fg = black })
 	h("DiffText", { bg = yellow, fg = black })
 	h("ErrorMsg", { fg = red })
@@ -129,7 +161,7 @@ function M.setup()
 	h("IncSearch", { fg = yellow, bg = comment_grey })
 	h("LineNr", { fg = gutter_fg_grey })
 	h("CursorLineNr", none)
-	h("MatchParen", { fg = blue, gui = "underline", cterm = "underline" })
+	h("MatchParen", { fg = blue, underline = true})
 	h("ModeMsg", none)
 	h("MoreMsg", none)
 	h("NonText", { fg = special_grey })
@@ -142,7 +174,7 @@ function M.setup()
 	h("QuickFixLine", { fg = black, bg = yellow })
 	h("Search", { fg = black, bg = yellow })
 	h("SpecialKey", { fg = special_grey })
-	h("SpellBad", { fg = red, gui = "underline", cterm = "underline" })
+	h("SpellBad", { fg = red, underline = true})
 	h("SpellCap", { fg = dark_yellow })
 	h("SpellLocal", { fg = dark_yellow })
 	h("SpellRare", { fg = dark_yellow })
@@ -162,7 +194,7 @@ function M.setup()
 
 	if vim.o.diff then
 		--Don't change the background color in diff mode
-		h("CursorLine", { gui = "underline" }) --the screen line that the cursor is in when 'cursorline' is set
+		h("CursorLine", {underline = true}) --the screen line that the cursor is in when 'cursorline' is set
 	else
 		h("CursorLine", { bg = cursor_grey }) --the screen line that the cursor is in when 'cursorline' is set
 	end
@@ -209,8 +241,8 @@ function M.setup()
 	h("goDeclType", { fg = cyan })
 	h("goTypeDecl", { fg = purple })
 	h("htmlArg", { fg = dark_yellow })
-	h("htmlBold", { fg = dark_yellow, gui = "bold", cterm = "bold" })
-	h("htmlBoldItalic", { fg = green, gui = "bold,italic", cterm = "bold,italic" })
+	h("htmlBold", { fg = dark_yellow, bold = true})
+	h("htmlBoldItalic", { fg = green, bold = true, italic = true})
 	h("htmlEndTag", { fg = white })
 	h("htmlH1", { fg = red })
 	h("htmlH2", { fg = red })
@@ -218,8 +250,8 @@ function M.setup()
 	h("htmlH4", { fg = red })
 	h("htmlH5", { fg = red })
 	h("htmlH6", { fg = red })
-	h("htmlItalic", { fg = purple, gui = "italic", cterm = "italic" })
-	h("htmlLink", { fg = cyan, gui = "underline", cterm = "underline" })
+	h("htmlItalic", { fg = purple, italic = true})
+	h("htmlLink", { fg = cyan, underline = true})
 	h("htmlSpecialChar", { fg = dark_yellow })
 	h("htmlSpecialTagName", { fg = red })
 	h("htmlTag", { fg = white })
@@ -282,18 +314,18 @@ function M.setup()
 	h("jsonBoolean", { fg = dark_yellow })
 	h("jsonNumber", { fg = dark_yellow })
 	h("jsonQuote", { fg = white })
-	h("jsonMissingCommaError", { fg = red, gui = "reverse" })
-	h("jsonNoQuotesError", { fg = red, gui = "reverse" })
-	h("jsonNumError", { fg = red, gui = "reverse" })
+	h("jsonMissingCommaError", { fg = red, reverse = true})
+	h("jsonNoQuotesError", { fg = red, reverse = true})
+	h("jsonNumError", { fg = red, reverse = true})
 	h("jsonString", { fg = green })
-	h("jsonStringSQError", { fg = red, gui = "reverse" })
-	h("jsonSemicolonError", { fg = red, gui = "reverse" })
+	h("jsonStringSQError", { fg = red, reverse = true})
+	h("jsonSemicolonError", { fg = red, reverse = true})
 	h("lessVariable", { fg = purple })
 	h("lessAmpersandChar", { fg = white })
 	h("lessClass", { fg = dark_yellow })
 	h("markdownBlockquote", { fg = comment_grey })
-	h("markdownBold", { fg = dark_yellow, gui = "bold", cterm = "bold" })
-	h("markdownBoldItalic", { fg = green, gui = "bold,italic", cterm = "bold,italic" })
+	h("markdownBold", { fg = dark_yellow, bold = true})
+	h("markdownBoldItalic", { fg = green, bold = true, italic = true})
 	h("markdownCode", { fg = green })
 	h("markdownCodeBlock", { fg = green })
 	h("markdownCodeDelimiter", { fg = green })
@@ -308,13 +340,13 @@ function M.setup()
 	h("markdownId", { fg = purple })
 	h("markdownIdDeclaration", { fg = blue })
 	h("markdownIdDelimiter", { fg = purple })
-	h("markdownItalic", { fg = purple, gui = "italic", cterm = "italic" })
+	h("markdownItalic", { fg = purple, italic = true})
 	h("markdownLinkDelimiter", { fg = purple })
 	h("markdownLinkText", { fg = blue })
 	h("markdownListMarker", { fg = red })
 	h("markdownOrderedListMarker", { fg = red })
 	h("markdownRule", { fg = comment_grey })
-	h("markdownUrl", { fg = cyan, gui = "underline", cterm = "underline" })
+	h("markdownUrl", { fg = cyan, underline = true})
 	h("perlFiledescRead", { fg = green })
 	h("perlFunction", { fg = purple })
 	h("perlMatchStartEnd",{ fg = blue })
@@ -464,10 +496,10 @@ function M.setup()
 	h("DiagnosticWarn", { fg = yellow })
 	h("DiagnosticInfo", { fg = blue })
 	h("DiagnosticHint", { fg = cyan })
-	h("DiagnosticUnderlineError", { fg = red, gui = "underline", cterm = "underline" })
-	h("DiagnosticUnderlineWarn", { fg = yellow, gui = "underline", cterm = "underline" })
-	h("DiagnosticUnderlineInfo", { fg = blue, gui = "underline", cterm = "underline" })
-	h("DiagnosticUnderlineHint", { fg = cyan, gui = "underline", cterm = "underline" })
+	h("DiagnosticUnderlineError", { fg = red, underline = true})
+	h("DiagnosticUnderlineWarn", { fg = yellow, underline = true})
+	h("DiagnosticUnderlineInfo", { fg = blue, underline = true})
+	h("DiagnosticUnderlineHint", { fg = cyan, underline = true})
 
 	-- neovim lsp
 	vim.api.nvim_set_hl(0, "LspDiagnosticsDefaultError",         { link = "DiagnosticError" })
