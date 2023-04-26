@@ -1,24 +1,24 @@
 
 local colors = {
-	red            = { gui = "#ff5f87"},
-	dark_red       = { gui = "#ff0000"},
-	green          = { gui = "#87d787"},
-	yellow         = { gui = "#d7af87"},
-	dark_yellow    = { gui = "#d7875f"},
-	blue           = { gui = "#00afff"},
-	purple         = { gui = "#d75fd7"},
-	cyan           = { gui = "#00afd7"},
-	white          = { gui = "#afafaf"},
-	black          = { gui = "#262626"},
-	foreground     = { gui = "#afafaf"},
-	background     = { gui = "#262626"},
-	comment_grey   = { gui = "#5f5f5f"},
-	gutter_fg_grey = { gui = "#444444"},
-	cursor_grey    = { gui = "#303030"},
-	visual_grey    = { gui = "#3a3a3a"},
-	menu_grey      = { gui = "#3a3a3a"},
-	special_grey   = { gui = "#444444"},
-	vertsplit      = { gui = "#5f5f5f"},
+	red            = { gui = "#ff5f87", cterm = 204},
+	dark_red       = { gui = "#ff0000", cterm = 196},
+	green          = { gui = "#87d787", cterm = 114},
+	yellow         = { gui = "#d7af87", cterm = 180},
+	dark_yellow    = { gui = "#d7875f", cterm = 173},
+	blue           = { gui = "#00afff", cterm = 39},
+	purple         = { gui = "#d75fd7", cterm = 170},
+	cyan           = { gui = "#00afd7", cterm = 38},
+	white          = { gui = "#afafaf", cterm = 145},
+	black          = { gui = "#262626", cterm = 235},
+	foreground     = { gui = "#afafaf", cterm = 145},
+	background     = { gui = "#262626", cterm = 235},
+	comment_grey   = { gui = "#5f5f5f", cterm = 59},
+	gutter_fg_grey = { gui = "#444444", cterm = 238},
+	cursor_grey    = { gui = "#303030", cterm = 236},
+	visual_grey    = { gui = "#3a3a3a", cterm = 237},
+	menu_grey      = { gui = "#3a3a3a", cterm = 237},
+	special_grey   = { gui = "#444444", cterm = 238},
+	vertsplit      = { gui = "#5f5f5f", cterm = 59},
 }
 
 
@@ -39,11 +39,13 @@ function M.set(group, style)
 
 	if (style.fg ~= nil) then
 		guifg = style.fg.gui
-		ctermfg = convert.gui2cterm(guifg)
+		if (style.fg.cterm ~= nil) then ctermfg = style.fg.cterm -- only calculate cterm when it's not already there
+		else ctermfg = convert.gui2cterm(guifg) end
 	end
 	if (style.bg ~= nil) then
 		guibg = style.bg.gui
-		ctermbg = convert.gui2cterm(guibg)
+		if (style.bg.cterm ~= nil) then ctermbg = style.bg.cterm
+		else ctermbg = convert.gui2cterm(guibg) end
 	end
 
 	vim.api.nvim_set_hl(0, group, {
